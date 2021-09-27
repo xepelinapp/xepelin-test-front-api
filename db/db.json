@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "admin",
+      "email": "m@m.cl",
+      "password": "123456"
+    }
+  ],
+  "favorites": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "userId": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "name": "pocahontas",
+      "userId": "1",
+      "id": 3
+    }
+  ]
+}
