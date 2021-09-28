@@ -2,9 +2,9 @@
   "users": [
     {
       "id": 1,
-      "name": "admin",
-      "email": "m@m.cl",
-      "password": "123456"
+      "name": "Juan Pérez",
+      "email": "juan.perez@mail.cl",
+      "password": "Ju4nP3r3z"
     }
   ],
   "favorites": [
