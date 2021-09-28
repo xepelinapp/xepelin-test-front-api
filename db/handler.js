@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const insert = (db, collection, data) => {
   const table = db.get(collection);
   table.push(data).write();
