@@ -3,7 +3,7 @@ const jsonServer = require("json-server");
 const server = jsonServer.create();
 const router = jsonServer.router("./db/db.json");
 const db = require("./db/db.json");
-const { insert } = require("./db/handler");
+const { insert, remove } = require("./db/handler");
 const middlewares = jsonServer.defaults();
 const checkJwt = require("./middlewares/auth");
 const handlerError = require("./middlewares/error");
@@ -52,7 +52,8 @@ server.get("/users/:id([0-9]+)/favorites", (req, res) => {
 });
 
 server.post("/users/:id([0-9]+)/favorites", (req, res) => {
-  const userId = req.params["id"];
+  const rawUserId = req.params["id"];
+  const userId = parseInt(rawUserId);
   const { movieId } = req.body;
   if (!movieId) {
     res
@@ -79,6 +80,32 @@ server.post("/users/:id([0-9]+)/favorites", (req, res) => {
   });
   return;
 });
+
+server.delete(
+  "/users/:id([0-9]+)/favorites/:favoriteId([0-9]+)",
+  (req, res) => {
+    const rawUserId = req.params["id"];
+    const rawFavoriteId = req.params["favoriteId"];
+    const userId = parseInt(rawUserId);
+    const favoriteId = parseInt(rawFavoriteId);
+    const favorite = db.favorites.find(
+      (favorite) => favorite.userId === userId && favorite.id === favoriteId
+    );
+
+    if (!favorite) {
+      res.status(404).json({
+        errorCode: "ERROR_FAVORITE_NOT_FOUND",
+        message: "favorite not found for this user",
+      });
+      return;
+    }
+
+    remove(router.db, "favorites", favoriteId);
+
+    res.status(200).json({});
+    return;
+  }
+);
 
 server.post("/register", (req, res) => {
   const { email, password, name } = req.body;

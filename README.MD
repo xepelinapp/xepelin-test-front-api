@@ -177,7 +177,7 @@ curl --location --request POST 'http://localhost:3000/users/1/favorites' \
 ```
 {
     "errorCode": "FAVORITE_ALREADY_REGISTER",
-    "message": "Davorite is already registered to user"
+    "message": "Favorite is already registered to user"
 }
 ```
 
@@ -187,5 +187,33 @@ curl --location --request POST 'http://localhost:3000/users/1/favorites' \
 {
     "errorCode": "INVALID_BODY",
     "message": "movieId is required"
+}
+```
+
+### **DELETE** /users/:userId/favorites/:favoriteId
+
+Permite eliminar una peliícula de favoritos del usuario (una vez autenticado)
+
+#### _Curl request:_
+
+```
+curl --location --request DELETE 'http://localhost:3000/users/1/favorites/1' \
+--header 'Content-Type: application/json;charset=UTF-8'
+```
+
+#### _Responses_
+
+#### 200
+
+```
+{}
+```
+
+#### 404 (favorito ya existe)
+
+```
+{
+    "errorCode": "ERROR_FAVORITE_NOT_FOUND",
+    "message": "favorite not found for this user"
 }
 ```
