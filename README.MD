@@ -140,8 +140,7 @@ curl --location --request GET 'http://localhost:3000/users/1/favorites' \
     {
       "id": 1,
       "userId": 1,
-      "name": "John Wick",
-      "body": "some description"
+      "movieId": 1
     },
   ]
 }
@@ -169,8 +168,7 @@ curl --location --request POST 'http://localhost:3000/users/1/favorites' \
 {
       "id": 2,
       "userId": 1,
-      "name": "John Wick 2",
-      "body": "some description"
+      "movieId": 2
 }
 ```
 
