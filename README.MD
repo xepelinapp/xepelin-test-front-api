@@ -101,7 +101,7 @@ curl --location --request POST 'http://localhost:3000/login' \
 ```json
 {
   "id": 1,
-  "name": "Juan Pérez"
+  "name": "Juan Pérez",
   "email": "juan.perez@mail.cl",
   "token": <<USER_TOKEN>>
 }
