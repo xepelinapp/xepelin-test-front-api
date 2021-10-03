@@ -5,6 +5,12 @@
       "name": "Juan Pérez",
       "email": "juan.perez@mail.cl",
       "password": "Ju4nP3r3z"
+    },
+    {
+      "id": 2,
+      "name": "Nicolás",
+      "email": "nico.perez@mail.cl",
+      "password": "nico.en.tinder"
     }
   ],
   "favorites": [

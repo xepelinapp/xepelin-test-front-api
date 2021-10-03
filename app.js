@@ -16,9 +16,63 @@ server.use(handlerError);
 server.use(delay);
 server.use(checkJwt);
 
+server.post("/register", (req, res) => {
+  const { email, password, name } = req.body;
+  if (!email) {
+    res
+      .status(422)
+      .json({ errorCode: "INVALID_BODY", message: "email is required" });
+    return;
+  } else if (!password) {
+    res
+      .status(422)
+      .json({ errorCode: "INVALID_BODY", message: "password is required" });
+    return;
+  } else if (!name) {
+    res
+      .status(422)
+      .json({ errorCode: "INVALID_BODY", message: "name is required" });
+    return;
+  }
+  const user = db.users.find((user) => user.email === email);
+  if (user) {
+    res.status(409).json({
+      errorCode: "USER_ALREADY_REGISTERED",
+      message: "User is already registered",
+    });
+    return;
+  }
+  const newUser = {
+    id: db.users.length + 1,
+    name,
+    email,
+    password,
+  };
+  insert(router.db, "users", newUser);
+  delete newUser.password;
+  const token = createJwtToken(newUser);
+  res.status(201).json({
+    ...newUser,
+    token,
+  });
+  return;
+});
+
 server.post("/login", (req, res) => {
-  const email = req.body["email"];
-  const password = req.body["password"];
+  const { email, password } = req.body;
+
+  if (!email) {
+    res
+      .status(422)
+      .json({ errorCode: "INVALID_BODY", message: "email is required" });
+    return;
+  } else if (!password) {
+    res
+      .status(422)
+      .json({ errorCode: "INVALID_BODY", message: "password is required" });
+    return;
+  }
+  
   const user = db.users.find((user) => user.email === email);
   if (!user) {
     res.status(401).json({
@@ -48,7 +102,6 @@ server.post("/login", (req, res) => {
 server.get("/users/:id([0-9]+)/favorites", (req, res) => {
   const rawUserId = req.params["id"];
   const userId = parseInt(rawUserId);
-  console.log("USER: ", userId);
   const favorites = db.favorites.filter(
     (favorite) => favorite.userId === userId
   );
@@ -64,6 +117,7 @@ server.post("/users/:id([0-9]+)/favorites", (req, res) => {
     res
       .status(422)
       .json({ errorCode: "INVALID_BODY", message: "movieId is required" });
+    return;
   }
   const favorite = db.favorites.find(
     (favorite) => favorite.userId === userId && favorite.movieId === movieId
@@ -73,6 +127,7 @@ server.post("/users/:id([0-9]+)/favorites", (req, res) => {
       errorCode: "FAVORITE_ALREADY_REGISTERED",
       message: "favorite is already registered to user",
     });
+    return;
   }
   const newFavorite = {
     id: db.favorites.length + 1,
@@ -111,43 +166,6 @@ server.delete(
     return;
   }
 );
-
-server.post("/register", (req, res) => {
-  const { email, password, name } = req.body;
-  if (!email) {
-    res
-      .status(422)
-      .json({ errorCode: "INVALID_BODY", message: "email is required" });
-  } else if (!password) {
-    res
-      .status(422)
-      .json({ errorCode: "INVALID_BODY", message: "password is required" });
-  } else if (!name) {
-    res
-      .status(422)
-      .json({ errorCode: "INVALID_BODY", message: "name is required" });
-  }
-  const user = db.users.find((user) => user.email === email);
-  if (user) {
-    res.status(409).json({
-      errorCode: "USER_ALREADY_REGISTERED",
-      message: "User is already registered",
-    });
-  }
-  const newUser = {
-    id: db.users.length + 1,
-    name,
-    email,
-    password,
-  };
-  insert(router.db, "users", newUser);
-  delete newUser.password;
-  const token = createJwtToken(newUser);
-  res.status(200).json({
-    token,
-  });
-  return;
-});
 
 server.use(router);
 server.listen(3000, () => {

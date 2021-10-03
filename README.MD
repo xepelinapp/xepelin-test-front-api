@@ -1,31 +1,49 @@
 # Prueba para desarrolladores front
 
-Este repositoria es una API que se utiliza como complemento en la evaluación técnica de los candidatos a **_Frontend Developer_** que postulan a Xepelin
+Este repositorio es una API que se utiliza como complemento en la evaluación técnica de los candidatos a **_Frontend Developer_** que postulan a Xepelin.
 
-Para la gestión de usuarios permite registrar y autenticar usuarios.
-Además complementa las funcionalidades proporcionadas por The Movie DB, permitiendo que los usuarios registrados puedan gestionar sus películar favoritas.
+Las funcionalidades que proporciona son:
+
+- Gestión de usuarios (registrar y autenticar).
+- Gestión de películas favoritas para usuarios registrados.
 
 > Esta API fue desarrollada de la forma más simple posible, pues el foco principal es evaluar la forma en la que el postulante consume esta información más que entregar una solución robusta.
 
+> Si en el uso de la API te encuentras con un error no controlado, notifícalo inmediatamente al encargado del proceso para que gestione su corrección. Por ningún motivo pierdas el foco de la evaluación corrigiéndolo, nosotros nos encargaremos de ello.
+
 ## Consideraciones
 
-- Todos los endpoints simulan una tasa de falla del 10% de los requests recibidos.
+- Todos los endpoints simulan una tasa de falla del 10% de los requests recibidos. La respuesta entregada es genérica y es la que sigue:
+
+##### Status code
+
+`500`
+
+##### Body
+
+```json
+{
+  "message": "CONTROLLED ERROR",
+  "errorCode": "CONTROLLED_ERROR"
+}
+```
+
 - Todos los enpoints simulan un delay en la respuesta que va entre los 0 y 5 segundos incluídos.
 
 ## Cómo ejecutar
 
-```
+```bash
 npm install
 npm start
 ```
 
 ## **POST** /register
 
-Permite registrar un usuario en el storage y en caso de ser exitoso entonces retornará el token correspondiente para que en la aplicación quede logeado inmediatamente.
+Permite registrar un usuario en el storage y en caso de ser exitoso retornará la información del usuairo y el token correspondiente para que en la aplicación quede logeado inmediatamente.
 
 ### Curl request:
 
-```
+```bash
 curl --location --request POST 'http://localhost:3000/register' \
 --header 'Content-Type: application/json;charset=UTF-8' \
 --data-raw '{
@@ -37,9 +55,9 @@ curl --location --request POST 'http://localhost:3000/register' \
 
 ### _Responses_
 
-#### 202
+#### 201
 
-```
+```json
 {
     "id": 1,
     "name": "Juan Pérez"
@@ -48,50 +66,31 @@ curl --location --request POST 'http://localhost:3000/register' \
 }
 ```
 
-#### 409 (usuario ya existe)
+#### 409
 
-```
+```json
 {
-    "errorCode": "USER_ALREADY_REGISTER",
-    "message": "User is already registered"
+  "errorCode": "USER_ALREADY_REGISTER",
+  "message": "User is already registered"
 }
 ```
 
-#### 422 (sin "name" en el request)
+#### 422
 
-```
+```json
 {
     "errorCode": "INVALID_BODY",
-    "message": "name is required"
-}
-```
-
-#### 422 (sin "email" en el request)
-
-```
-{
-    "errorCode": "INVALID_BODY",
-    "message": "email is required"
-}
-```
-
-#### 422 (sin "password" en el request)
-
-```
-{
-    "errorCode": "INVALID_BODY",
-    "message": "password is required
+    "message": <<ERROR_DESCRIPTION>>
 }
 ```
 
 ## **POST** /login
 
-Permite autenticar un usuario y obtener un token para acceder a funcionalidades
-para usuarios registrados.
+Permite autenticar un usuario y obtener un token para acceder a funcionalidades de usuarios registrados.
 
 ### _Curl request:_
 
-```
+```bash
 curl --location --request POST 'http://localhost:3000/login' \
 --header 'Content-Type: application/json;charset=UTF-8' \
 --data-raw '{
@@ -102,9 +101,9 @@ curl --location --request POST 'http://localhost:3000/login' \
 
 ### _Responses_
 
-#### 202
+#### 200
 
-```
+```json
 {
   "id": 1,
   "name": "Juan Pérez"
@@ -115,10 +114,19 @@ curl --location --request POST 'http://localhost:3000/login' \
 
 #### 401
 
-```
+```json
 {
   "message": "Invalid credentials",
   "errorCode": "LOGIN_ERROR_INVALID_CREDENTIALS"
+}
+```
+
+#### 422
+
+```json
+{
+    "errorCode": "INVALID_BODY",
+    "message": <<ERROR_DESCRIPTION>>
 }
 ```
 
@@ -135,7 +143,7 @@ curl --location --request GET 'http://localhost:3000/users/1/favorites' \
 
 ### _Responses_
 
-#### 202
+#### 200
 
 ```
 {
