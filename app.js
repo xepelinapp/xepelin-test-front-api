@@ -72,7 +72,7 @@ server.post("/login", (req, res) => {
       .json({ errorCode: "INVALID_BODY", message: "password is required" });
     return;
   }
-  
+
   const user = db.users.find((user) => user.email === email);
   if (!user) {
     res.status(401).json({
@@ -99,9 +99,8 @@ server.post("/login", (req, res) => {
   return;
 });
 
-server.get("/users/:id([0-9]+)/favorites", (req, res) => {
-  const rawUserId = req.params["id"];
-  const userId = parseInt(rawUserId);
+server.get("/favorites", (req, res) => {
+  const { id: userId } = req.user;
   const favorites = db.favorites.filter(
     (favorite) => favorite.userId === userId
   );
@@ -109,9 +108,8 @@ server.get("/users/:id([0-9]+)/favorites", (req, res) => {
   return;
 });
 
-server.post("/users/:id([0-9]+)/favorites", (req, res) => {
-  const rawUserId = req.params["id"];
-  const userId = parseInt(rawUserId);
+server.post("/favorites", (req, res) => {
+  const { id: userId } = req.user;
   const { movieId } = req.body;
   if (!movieId) {
     res
@@ -125,7 +123,7 @@ server.post("/users/:id([0-9]+)/favorites", (req, res) => {
   if (favorite) {
     res.status(409).json({
       errorCode: "FAVORITE_ALREADY_REGISTERED",
-      message: "favorite is already registered to user",
+      message: "Favorite movie is already registered to user",
     });
     return;
   }
@@ -141,31 +139,27 @@ server.post("/users/:id([0-9]+)/favorites", (req, res) => {
   return;
 });
 
-server.delete(
-  "/users/:id([0-9]+)/favorites/:favoriteId([0-9]+)",
-  (req, res) => {
-    const rawUserId = req.params["id"];
-    const rawFavoriteId = req.params["favoriteId"];
-    const userId = parseInt(rawUserId);
-    const favoriteId = parseInt(rawFavoriteId);
-    const favorite = db.favorites.find(
-      (favorite) => favorite.userId === userId && favorite.id === favoriteId
-    );
+server.delete("/favorites/:favoriteId([0-9]+)", (req, res) => {
+  const { id: userId } = req.user;
+  const { favoriteId: rawFavoriteId } = req.params;
+  const favoriteId = parseInt(rawFavoriteId);
 
-    if (!favorite) {
-      res.status(404).json({
-        errorCode: "ERROR_FAVORITE_NOT_FOUND",
-        message: "favorite not found for this user",
-      });
-      return;
-    }
-
-    remove(router.db, "favorites", favoriteId);
-
-    res.status(200).json({});
+  const favorite = db.favorites.find(
+    (favorite) => favorite.userId === userId && favorite.id === favoriteId
+  );
+  if (!favorite) {
+    res.status(404).json({
+      errorCode: "ERROR_FAVORITE_NOT_FOUND",
+      message: "Favorite not found for this user",
+    });
     return;
   }
-);
+
+  remove(router.db, "favorites", favoriteId);
+
+  res.status(204).json({});
+  return;
+});
 
 server.use(router);
 server.listen(3000, () => {

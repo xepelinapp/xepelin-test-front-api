@@ -13,22 +13,17 @@ Las funcionalidades que proporciona son:
 
 ## Consideraciones
 
+- Todos los enpoints simulan un delay en la respuesta que va entre los 0 y 5 segundos incluídos.
 - Todos los endpoints simulan una tasa de falla del 10% de los requests recibidos. La respuesta entregada es genérica y es la que sigue:
 
-##### Status code
-
-`500`
-
-##### Body
+#### 500
 
 ```json
 {
-  "message": "CONTROLLED ERROR",
-  "errorCode": "CONTROLLED_ERROR"
+  "errorCode": "CONTROLLED_ERROR",
+  "message": "CONTROLLED ERROR"
 }
 ```
-
-- Todos los enpoints simulan un delay en la respuesta que va entre los 0 y 5 segundos incluídos.
 
 ## Cómo ejecutar
 
@@ -59,10 +54,10 @@ curl --location --request POST 'http://localhost:3000/register' \
 
 ```json
 {
-    "id": 1,
-    "name": "Juan Pérez"
-    "email": "juan.perez@mail.cl",
-    "token": <<USER_TOKEN>>
+  "id": 1,
+  "name": "Juan Pérez",
+  "email": "juan.perez@mail.cl",
+  "token": <<USER_TOKEN>>
 }
 ```
 
@@ -79,8 +74,8 @@ curl --location --request POST 'http://localhost:3000/register' \
 
 ```json
 {
-    "errorCode": "INVALID_BODY",
-    "message": <<ERROR_DESCRIPTION>>
+  "errorCode": "INVALID_BODY",
+  "message": <<ERROR_DESCRIPTION>>
 }
 ```
 
@@ -116,8 +111,8 @@ curl --location --request POST 'http://localhost:3000/login' \
 
 ```json
 {
-  "message": "Invalid credentials",
-  "errorCode": "LOGIN_ERROR_INVALID_CREDENTIALS"
+  "errorCode": "LOGIN_ERROR_INVALID_CREDENTIALS",
+  "message": "Invalid credentials"
 }
 ```
 
@@ -125,19 +120,19 @@ curl --location --request POST 'http://localhost:3000/login' \
 
 ```json
 {
-    "errorCode": "INVALID_BODY",
-    "message": <<ERROR_DESCRIPTION>>
+  "errorCode": "INVALID_BODY",
+  "message": <<ERROR_DESCRIPTION>>
 }
 ```
 
-## **GET** /users/:userId/favorites
+## **GET** /favorites
 
 Permite consultar los favoritos de un usuario en particular (una vez autenticado)
 
 ### _Curl request:_
 
-```
-curl --location --request GET 'http://localhost:3000/users/1/favorites' \
+```bash
+curl --location --request GET 'http://localhost:3000/favorites' \
 --header 'Content-Type: application/json;charset=UTF-8'
 ```
 
@@ -145,26 +140,44 @@ curl --location --request GET 'http://localhost:3000/users/1/favorites' \
 
 #### 200
 
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "movieId": 1
+  }
+]
 ```
+
+#### 401
+
+```json
 {
- [
-    {
-      "id": 1,
-      "userId": 1,
-      "movieId": 1
-    },
-  ]
+  "errorCode": "AUTHORIZATION_ERROR",
+  "message": "No authorization provided"
 }
 ```
 
-## **POST** /users/:userId/favorites
+#### 401
 
-Permite agregar una peliícula a favoritos del usuario (una vez autenticado)
+```json
+{
+  "errorCode": "INVALID_TOKEN",
+  "message": "User not found"
+}
+```
+
+## **POST** /favorites
+
+Permite agregar una peliícula a favoritos del usuario (una vez autenticado).
+
+> La API asume que que se envía el tipo de dato correcto para el parámetro movieId.
 
 ### _Curl request:_
 
-```
-curl --location --request POST 'http://localhost:3000/users/1/favorites' \
+```bash
+curl --location --request POST 'http://localhost:3000/favorites' \
 --header 'Content-Type: application/json;charset=UTF-8' \
 --data-raw '{
     "movieId": 2
@@ -175,58 +188,92 @@ curl --location --request POST 'http://localhost:3000/users/1/favorites' \
 
 #### 200
 
-```
-[
-  {
-    "id": 2,
-    "userId": 1,
-    "movieId": 2
-  }
-]
-```
-
-#### 409 (favorito ya existe)
-
-```
+```json
 {
-    "errorCode": "FAVORITE_ALREADY_REGISTER",
-    "message": "Favorite is already registered to user"
+  "id": 2,
+  "userId": 1,
+  "movieId": 2
 }
 ```
 
-#### 422 (sin "movieId" en el request)
+#### 401
 
-```
+```json
 {
-    "errorCode": "INVALID_BODY",
-    "message": "movieId is required"
+  "errorCode": "AUTHORIZATION_ERROR",
+  "message": "No authorization provided"
 }
 ```
 
-## **DELETE** /users/:userId/favorites/:favoriteId
+#### 401
+
+```json
+{
+  "errorCode": "INVALID_TOKEN",
+  "message": "User not found"
+}
+```
+
+#### 409
+
+```json
+{
+  "errorCode": "FAVORITE_ALREADY_REGISTER",
+  "message": "Favorite movie is already registered to user"
+}
+```
+
+#### 422
+
+```json
+{
+  "errorCode": "INVALID_BODY",
+  "message": "movieId is required"
+}
+```
+
+## **DELETE** /favorites/:favoriteId
 
 Permite eliminar una peliícula de favoritos del usuario (una vez autenticado)
 
 ### _Curl request:_
 
-```
-curl --location --request DELETE 'http://localhost:3000/users/1/favorites/1' \
+```bash
+curl --location --request DELETE 'http://localhost:3000/favorites/1' \
 --header 'Content-Type: application/json;charset=UTF-8'
 ```
 
 ### _Responses_
 
-#### 200
+#### 204
+
+```json
 
 ```
-{}
-```
 
-#### 404 (favorito ya existe)
+#### 401
 
-```
+```json
 {
-    "errorCode": "ERROR_FAVORITE_NOT_FOUND",
-    "message": "favorite not found for this user"
+  "errorCode": "AUTHORIZATION_ERROR",
+  "message": "No authorization provided"
+}
+```
+
+#### 401
+
+```json
+{
+  "errorCode": "INVALID_TOKEN",
+  "message": "User not found"
+}
+```
+
+#### 404
+
+```json
+{
+  "errorCode": "ERROR_FAVORITE_NOT_FOUND",
+  "message": "Favorite not found for this user"
 }
 ```
