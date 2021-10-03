@@ -37,17 +37,22 @@ server.post("/login", (req, res) => {
   delete user.password;
   const token = createJwtToken(user);
   res.status(200).json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
     token,
   });
   return;
 });
 
 server.get("/users/:id([0-9]+)/favorites", (req, res) => {
-  const userId = req.params["id"];
-  const favorites = db.favorites.find((favorite) => favorite.userId === userId);
-  res.status(200).json({
-    favorites,
-  });
+  const rawUserId = req.params["id"];
+  const userId = parseInt(rawUserId);
+  console.log("USER: ", userId);
+  const favorites = db.favorites.filter(
+    (favorite) => favorite.userId === userId
+  );
+  res.status(200).json(favorites);
   return;
 });
 

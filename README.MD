@@ -106,11 +106,14 @@ curl --location --request POST 'http://localhost:3000/login' \
 
 ```
 {
+  "id": 1,
+  "name": "Juan Pérez"
+  "email": "juan.perez@mail.cl",
   "token": <<USER_TOKEN>>
 }
 ```
 
-##### 401
+#### 401
 
 ```
 {
@@ -119,18 +122,18 @@ curl --location --request POST 'http://localhost:3000/login' \
 }
 ```
 
-### **GET** /users/:userId/favorites
+## **GET** /users/:userId/favorites
 
 Permite consultar los favoritos de un usuario en particular (una vez autenticado)
 
-#### _Curl request:_
+### _Curl request:_
 
 ```
 curl --location --request GET 'http://localhost:3000/users/1/favorites' \
 --header 'Content-Type: application/json;charset=UTF-8'
 ```
 
-#### _Responses_
+### _Responses_
 
 #### 202
 
@@ -146,11 +149,11 @@ curl --location --request GET 'http://localhost:3000/users/1/favorites' \
 }
 ```
 
-### **POST** /users/:userId/favorites
+## **POST** /users/:userId/favorites
 
 Permite agregar una peliícula a favoritos del usuario (una vez autenticado)
 
-#### _Curl request:_
+### _Curl request:_
 
 ```
 curl --location --request POST 'http://localhost:3000/users/1/favorites' \
@@ -160,16 +163,18 @@ curl --location --request POST 'http://localhost:3000/users/1/favorites' \
 }'
 ```
 
-#### _Responses_
+### _Responses_
 
 #### 200
 
 ```
-{
-      "id": 2,
-      "userId": 1,
-      "movieId": 2
-}
+[
+  {
+    "id": 2,
+    "userId": 1,
+    "movieId": 2
+  }
+]
 ```
 
 #### 409 (favorito ya existe)
@@ -190,18 +195,18 @@ curl --location --request POST 'http://localhost:3000/users/1/favorites' \
 }
 ```
 
-### **DELETE** /users/:userId/favorites/:favoriteId
+## **DELETE** /users/:userId/favorites/:favoriteId
 
 Permite eliminar una peliícula de favoritos del usuario (una vez autenticado)
 
-#### _Curl request:_
+### _Curl request:_
 
 ```
 curl --location --request DELETE 'http://localhost:3000/users/1/favorites/1' \
 --header 'Content-Type: application/json;charset=UTF-8'
 ```
 
-#### _Responses_
+### _Responses_
 
 #### 200
 
