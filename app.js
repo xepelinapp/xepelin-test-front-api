@@ -16,6 +16,10 @@ server.use(handlerError);
 server.use(delay);
 server.use(checkJwt);
 
+const generateId = () => {
+  return new Date().getTime();
+};
+
 server.post("/register", (req, res) => {
   const { email, password, name } = req.body;
   if (!email) {
@@ -43,7 +47,7 @@ server.post("/register", (req, res) => {
     return;
   }
   const newUser = {
-    id: db.users.length + 1,
+    id: generateId(),
     name,
     email,
     password,
@@ -128,7 +132,7 @@ server.post("/favorites", (req, res) => {
     return;
   }
   const newFavorite = {
-    id: db.favorites.length + 1,
+    id: generateId(),
     userId,
     movieId,
   };
